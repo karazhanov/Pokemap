@@ -21,6 +21,7 @@
         android:id="@+id/location_fab" />
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:orientation="horizontal"
@@ -50,5 +51,31 @@
                 android:layout_gravity="center_vertical"/>
 
         </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:id="@+id/layoutInfo"
+        android:background="#AAAAAAAA"
+        android:layout_gravity="bottom">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stackFromBottom="true"
+            android:transcriptMode="alwaysScroll"
+            android:id="@+id/scrollView" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/log"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:textStyle="italic" />
+        </ScrollView>
+
+    </LinearLayout>
 
 </FrameLayout>

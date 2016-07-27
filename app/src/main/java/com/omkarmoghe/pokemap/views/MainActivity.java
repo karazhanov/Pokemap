@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.omkarmoghe.pokemap.R;
+import com.omkarmoghe.pokemap.executors.CatchAll;
 import com.omkarmoghe.pokemap.models.events.InternalExceptionEvent;
 import com.omkarmoghe.pokemap.models.events.LoginEventResult;
 import com.omkarmoghe.pokemap.models.events.SearchInPosition;
@@ -25,9 +26,14 @@ import com.omkarmoghe.pokemap.views.map.MapWrapperFragment;
 import com.omkarmoghe.pokemap.views.settings.SettingsActivity;
 import com.omkarmoghe.pokemap.controllers.app_preferences.PokemapAppPreferences;
 import com.omkarmoghe.pokemap.controllers.app_preferences.PokemapSharedPreferences;
+import com.pokegoapi.api.map.pokemon.CatchResult;
+import com.pokegoapi.api.map.pokemon.CatchablePokemon;
+import com.pokegoapi.api.map.pokemon.EncounterResult;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.List;
 
 public class MainActivity extends BaseActivity {
     private static final String TAG = "Pokemap";
@@ -35,8 +41,9 @@ public class MainActivity extends BaseActivity {
 
 
     private PokemapAppPreferences pref;
+    private MapWrapperFragment mapWrapperFragment;
 
-    public static Toast toast;
+//    public static Toast toast;
 
     //region Lifecycle Methods
     @Override
@@ -45,17 +52,17 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         pref = new PokemapSharedPreferences(this);
-        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+//        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        MapWrapperFragment mapWrapperFragment = (MapWrapperFragment) fragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG);
+        mapWrapperFragment = (MapWrapperFragment) fragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG);
         if(mapWrapperFragment == null) {
             mapWrapperFragment = MapWrapperFragment.newInstance();
         }
-        fragmentManager.beginTransaction().replace(R.id.main_container,mapWrapperFragment, MAP_FRAGMENT_TAG)
+        fragmentManager.beginTransaction().replace(R.id.main_container, mapWrapperFragment, MAP_FRAGMENT_TAG)
                 .commit();
     }
 
@@ -85,6 +92,10 @@ public class MainActivity extends BaseActivity {
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.action_relogin) {
             login();
+        } else if(id == R.id.action_catch) {
+            catchAll();
+        } else if(id == R.id.action_lure) {
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -115,6 +126,11 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+
+    private void catchAll() {
+        new CatchAll(nianticManager, mapWrapperFragment).execute();
+    }
+
     private void requestLoginCredentials() {
         getSupportFragmentManager().beginTransaction().add(RequestCredentialsDialogFragment.newInstance(null), "request_credentials").commit();
     }
@@ -127,17 +143,17 @@ public class MainActivity extends BaseActivity {
     @Subscribe
     public void onEvent(LoginEventResult result) {
         if (result.isLoggedIn()) {
-            toast.setText("You have logged in successfully.");
-            toast.show();
-            LatLng latLng = LocationManager.getInstance(MainActivity.this).getLocation();
+//            toast.setText("You have logged in successfully.");
+//            toast.show();
+//            LatLng latLng = LocationManager.getInstance(MainActivity.this).getLocation();
 
-            if (latLng != null) {
-                nianticManager.getCatchablePokemon(latLng.latitude, latLng.longitude, 0D);
-            }
-        } else {
-            toast.cancel();
-            toast.setText("Could not log in. Make sure your credentials are correct.");
-            toast.show();
+//            if (latLng != null) {
+//                nianticManager.getCatchablePokemon(latLng.latitude, latLng.longitude, 0D);
+//            }
+//        } else {
+//            toast.cancel();
+//            toast.setText("Could not log in. Make sure your credentials are correct.");
+//            toast.show();
         }
     }
 
@@ -148,9 +164,10 @@ public class MainActivity extends BaseActivity {
      */
     @Subscribe
     public void onEvent(SearchInPosition event) {
-        toast.setText("Searching...");
-        toast.show();
+//        toast.setText("Searching...");
+//        toast.show();
         nianticManager.getCatchablePokemon(event.getPosition().latitude, event.getPosition().longitude, 0D);
+//        nianticManager.getPokestops(event.getPosition().latitude, event.getPosition().longitude, 0D);
     }
 
     /**
@@ -163,8 +180,8 @@ public class MainActivity extends BaseActivity {
 
         event.getE().printStackTrace();
 
-        toast.setText("Unable to contact the Pokemon GO servers. The servers may be down.");
-        toast.show();
+//        toast.setText("Unable to contact the Pokemon GO servers. The servers may be down.");
+//        toast.show();
     }
 
     /**
@@ -175,8 +192,8 @@ public class MainActivity extends BaseActivity {
     @Subscribe
     public void onEvent(TokenExpiredEvent event) {
 
-        toast.setText("The login token has expired. Getting a new one.");
-        toast.show();
+//        toast.setText("The login token has expired. Getting a new one.");
+//        toast.show();
         login();
     }
 

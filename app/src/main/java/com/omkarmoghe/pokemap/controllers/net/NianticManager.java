@@ -12,11 +12,13 @@ import android.util.Log;
 
 import com.omkarmoghe.pokemap.models.events.InternalExceptionEvent;
 import com.omkarmoghe.pokemap.models.events.LoginEventResult;
+import com.omkarmoghe.pokemap.models.events.PokestopEvent;
 import com.omkarmoghe.pokemap.models.events.ServerUnreachableEvent;
 import com.omkarmoghe.pokemap.models.events.TokenExpiredEvent;
 import com.omkarmoghe.pokemap.models.map.LatLng;
 import com.omkarmoghe.pokemap.models.map.SearchParams;
 import com.pokegoapi.api.PokemonGo;
+import com.pokegoapi.api.map.fort.Pokestop;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 import com.pokegoapi.auth.GoogleLogin;
 import com.pokegoapi.auth.PtcLogin;
@@ -66,6 +68,15 @@ public class NianticManager {
     private final OkHttpClient mClient;
     private final OkHttpClient mPoGoClient;
     private PokemonGo mPokemonGo;
+    private Logger logger;
+
+    public interface Logger{
+        void log(String s);
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
 
     public static NianticManager getInstance(){
         return instance;
@@ -292,21 +303,51 @@ public class NianticManager {
     }
 
     public void getCatchablePokemon(final double lat, final double longitude, final double alt){
+        logger.log("Start found pokemons");
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 try {
                     if (mPokemonGo != null) {
-
-                        SearchParams params = new SearchParams(SearchParams.DEFAULT_RADIUS * 3, new LatLng(lat, longitude));
+                        SearchParams params = new SearchParams(SearchParams.DEFAULT_RADIUS * 2, new LatLng(lat, longitude));
                         List<LatLng> list = params.getSearchArea();
                         List<CatchablePokemon> pokemon = new ArrayList<>();
                         for (LatLng p : list) {
                             mPokemonGo.setLocation(p.latitude, p.longitude, alt);
                             pokemon.addAll(mPokemonGo.getMap().getCatchablePokemon());
                         }
-
                         EventBus.getDefault().post(new CatchablePokemonEvent(pokemon));
+                    }
+                } catch (LoginFailedException e) {
+                    Log.e("LOG", "ERROR FINDING POKEMONS " + e);
+                    EventBus.getDefault().post(new TokenExpiredEvent());
+                } catch (RemoteServerException e) {
+                    Log.e("LOG", "ERROR FINDING POKEMONS " + e);
+                    EventBus.getDefault().post(new ServerUnreachableEvent(e));
+                } catch (Exception e) {
+                    Log.e("LOG", "ERROR FINDING POKEMONS " + e);
+                    EventBus.getDefault().post(new InternalExceptionEvent(e));
+                } finally {
+                    Log.e("LOG", "FINISH FINDING POKEMONS");
+                }
+            }
+        });
+    }
+
+    public void getPokestops(final double lat, final double longitude, final double alt){
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (mPokemonGo != null) {
+                        SearchParams params = new SearchParams(SearchParams.DEFAULT_RADIUS * 3, new LatLng(lat, longitude));
+                        List<LatLng> list = params.getSearchArea();
+                        List<Pokestop> pokestops = new ArrayList<>();
+                        for (LatLng p : list) {
+                            mPokemonGo.setLocation(p.latitude, p.longitude, alt);
+                            pokestops.addAll(mPokemonGo.getMap().getMapObjects().getPokestops());
+                        }
+                        EventBus.getDefault().post(new PokestopEvent(pokestops));
                     }
                 } catch (LoginFailedException e) {
                     EventBus.getDefault().post(new TokenExpiredEvent());
@@ -319,4 +360,7 @@ public class NianticManager {
         });
     }
 
+    public void setLocation(final double lat, final double longitude, final double alt) {
+        mPokemonGo.setLocation(lat, longitude, alt);
+    }
 }

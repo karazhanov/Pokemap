@@ -6,15 +6,13 @@ import com.google.android.gms.maps.model.Marker;
 /**
  * Created by socrates on 7/24/2016.
  */
-public class PokemonMarkerExtended {
-
+public class PokemonMarkerExtended extends MarkerExtended {
 
     private CatchablePokemon catchablePokemon;
-    private Marker marker;
 
     public PokemonMarkerExtended(CatchablePokemon catchablePokemon, Marker marker) {
+        super(marker);
         this.catchablePokemon = catchablePokemon;
-        this.marker = marker;
     }
 
     public CatchablePokemon getCatchablePokemon() {
@@ -23,13 +21,5 @@ public class PokemonMarkerExtended {
 
     public void setCatchablePokemon(CatchablePokemon catchablePokemon) {
         this.catchablePokemon = catchablePokemon;
-    }
-
-    public Marker getMarker() {
-        return marker;
-    }
-
-    public void setMarker(Marker marker) {
-        this.marker = marker;
     }
 }

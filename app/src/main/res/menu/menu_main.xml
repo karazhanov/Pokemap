@@ -6,4 +6,8 @@
         android:title="@string/action_settings" app:showAsAction="never" />
     <item android:id="@+id/action_relogin" android:orderInCategory="200"
         android:title="@string/action_relogin" app:showAsAction="never" />
+    <item android:id="@+id/action_catch" android:orderInCategory="200"
+        android:title="@string/action_catch" app:showAsAction="never" />
+    <item android:id="@+id/action_lure" android:orderInCategory="200"
+        android:title="@string/action_lure" app:showAsAction="never" />
 </menu>

@@ -27,7 +27,7 @@ public class SearchParams {
         List<LatLng> searchArea = new ArrayList<>();
         searchArea.add(mCenter);
         int steps = (int) Math.ceil(mRadius/DEFAULT_RADIUS);
-        Log.d(TAG, "getSearchArea: Steps = " + steps);
+        Log.e(TAG, "getSearchArea: Steps = " + steps);
         int count = 0;
         for (int i = 2; i <= steps; i++) {
 
@@ -75,8 +75,8 @@ public class SearchParams {
             count = count == 0 ? 6 - 1 : (count+ 1) *2 - 1;
         }
 
-        Log.d(TAG, "getSearchArea: searchArea size = " + searchArea.size());
-        Log.d(TAG, "getSearchArea() returned: " + searchArea);
+        Log.e(TAG, "getSearchArea: searchArea size = " + searchArea.size());
+        Log.e(TAG, "getSearchArea() returned: " + searchArea);
 
         return searchArea;
     }
